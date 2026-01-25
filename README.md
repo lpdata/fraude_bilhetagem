@@ -12,7 +12,7 @@ O trabalho contempla todas as etapas clássicas de um pipeline profissional de M
 
 A missão é **desenvolver um modelo capaz de identificar e prever ocorrências de fraude** a partir de dados transacionais de bilhetagem, respeitando os seguintes princípios:
 
-- Utilização de **Python 3.x**
+- Utilização de **Python 3.12.12**
 - Competição de performance entre **no mínimo 3 modelos distintos**
 - **Prioridade para modelos interpretáveis**
 - Clareza na escolha de métricas e critérios de avaliação
@@ -55,30 +55,35 @@ O projeto foi estruturado de forma incremental e auditável, seguindo boas prát
 
 ## 🗂 Estrutura do Repositório
 
+## 🗂 Estrutura do Repositório
+
+```
 fraude_bilhetagem/
 │
 ├── data/
-│ ├── raw/ # Dados brutos
-│ └── processed/ # Dados tratados e prontos para modelagem
-│ ├── dados_tratados.csv
-│ ├── schema_dados_tratados.json
-│ ├── metadados_colunas.csv
-│ └── metadados_dataset.json
+│   ├── raw/                     # Dados brutos (originais)
+│   └── processed/               # Dados tratados e prontos para modelagem
+│       ├── dados_tratados.csv
+│       ├── schema_dados_tratados.json
+│       ├── metadados_colunas.csv
+│       └── metadados_dataset.json
 │
 ├── notebooks/
-│ ├── 01_exploracao_dados.ipynb
-│ ├── 02_tratamento_features.ipynb
-│ └── 03_modelagem.ipynb
+│   ├── 01_exploracao_dados.ipynb
+│   ├── 02_tratamento_features.ipynb
+│   └── 03_modelagem.ipynb
 │
 ├── src/
-│ ├── features.py # Funções reutilizáveis de engenharia de features
-│ ├── preprocessing.py # Rotinas de pré-processamento
-│ ├── models.py # Treinamento e comparação de modelos
-│ └── metrics.py # Métricas e avaliação
+│   ├── features.py              # Funções reutilizáveis de engenharia de features
+│   ├── preprocessing.py         # Rotinas de pré-processamento
+│   ├── models.py                # Treinamento e comparação de modelos
+│   └── metrics.py               # Métricas e avaliação
 │
-├── README.md
-└── requirements.txt
-
+├── outputs/                     # Resultados, gráficos e artefatos gerados
+│
+├── README.md                    # Documentação principal do projeto
+└── requirements.txt             # Dependências do projeto
+```
 
 > 🔎 **Observação:**  
 > O desenvolvimento inicial foi realizado em notebooks para facilitar análise, auditoria e comunicação.  
