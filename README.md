@@ -63,33 +63,75 @@ O conjunto de dados original é composto por 30.000 registros de transações de
 
 O dicionário completo, contendo todas as variáveis originais do dataset, encontra-se no arquivo **Dicionário de Dados.pdf**, disponível na pasta `data/raw/`.
 
+
 ## 🔍 Análise Exploratória dos Dados
 
-A análise exploratória foi conduzida ao longo das etapas iniciais do projeto, com o objetivo de compreender a estrutura do dataset, a natureza do problema de fraude e os principais padrões associados ao uso dos cartões. Essa etapa orientou tanto a engenharia de features quanto as decisões posteriores de modelagem.
+A análise exploratória teve como objetivo compreender a estrutura do dataset, a distribuição da variável alvo e os principais padrões associados ao uso dos cartões. Essa etapa foi fundamental para orientar tanto a engenharia de features quanto as decisões de modelagem adotadas posteriormente.
 
-### Estrutura e Qualidade dos Dados
+### Visão Geral da Base de Dados
 
-O conjunto de dados apresenta volume adequado e estrutura consistente para fins de modelagem preditiva. As variáveis temporais, categóricas e numéricas encontram-se bem definidas, permitindo análises sob diferentes perspectivas comportamentais e contextuais. Não foram identificados problemas críticos de integridade que inviabilizassem o uso dos dados, embora algumas variáveis demandassem tratamento e padronização em etapas posteriores.
+| Aspecto | Observação |
+|------|-----------|
+| Volume de dados | Adequado para modelagem preditiva |
+| Tipos de variáveis | Temporais, categóricas e numéricas |
+| Integridade | Sem problemas críticos que inviabilizem a análise |
+| Tratamentos necessários | Padronização e engenharia de features em etapas seguintes |
+
+A base mostrou-se consistente e suficientemente rica para análises comportamentais e contextuais, ainda que algumas variáveis exigissem tratamento específico.
 
 ### Variável Alvo e Desbalanceamento
 
-A variável alvo `target_fraude` apresenta desbalanceamento, com predominância de transações normais em relação às fraudulentas. Esse cenário reforça a necessidade de cuidado na escolha das métricas de avaliação e na interpretação dos resultados, especialmente considerando o impacto operacional de falsos positivos sinalizado pela área de negócio.
+A variável `target_fraude` apresenta **desbalanceamento significativo**, com predominância de transações normais. Esse aspecto foi tratado como um elemento central do problema, influenciando diretamente:
+
+- A escolha das métricas de avaliação  
+- A interpretação dos resultados dos modelos  
+- A análise de trade-offs operacionais  
+
+Esse cenário é especialmente relevante considerando o impacto negativo associado a falsos positivos, conforme apontado pela área de negócio.
 
 ### Padrões Temporais e Contextuais
 
-As análises temporais, como hora do dia, dia da semana e tempo de vida do cartão, indicaram variações discretas na taxa de fraude, sem padrões determinísticos claros quando observadas de forma isolada. Variáveis de contexto operacional, como integração tarifária e limites de uso, também apresentaram baixo poder discriminante individual, sugerindo atuação apenas como sinais auxiliares quando combinadas a outros atributos.
+As análises temporais e contextuais indicaram que **não há padrões determinísticos claros** quando essas variáveis são avaliadas de forma isolada.
+
+Principais observações:
+- Variações discretas por hora do dia e dia da semana  
+- Pouca diferenciação associada ao tempo de vida do cartão  
+- Baixo poder discriminante individual de variáveis operacionais, como integração tarifária e limites de uso  
+
+Esses atributos tendem a atuar como **sinais auxiliares**, ganhando relevância apenas quando combinados a outros fatores.
 
 ### Perfil do Usuário e Características da Transação
 
-Variáveis demográficas e cadastrais não demonstraram diferenças relevantes entre transações normais e fraudulentas. Da mesma forma, o valor da transação, analisado isoladamente, apresentou forte sobreposição entre os grupos, indicando que não constitui um indicador direto de fraude neste contexto. Por outro lado, o tipo de cartão apresentou diferenças mais expressivas na taxa de fraude, sugerindo influência do perfil do benefício no risco associado.
+A análise do perfil do usuário indicou que variáveis demográficas e cadastrais não apresentam diferenças relevantes entre transações normais e fraudulentas.
+
+Outros pontos observados:
+- Forte sobreposição do valor da transação entre os grupos  
+- Ausência de limiares claros que indiquem fraude apenas com base em valor  
+- Diferenças mais perceptíveis associadas ao tipo de cartão, sugerindo influência do perfil do benefício no risco  
+
+Esses achados reforçam a limitação de regras simples baseadas em atributos isolados.
 
 ### Comportamento de Uso dos Cartões
 
-A análise comportamental evidenciou que métricas simples de frequência ou intervalo entre transações não são suficientes, isoladamente, para diferenciar cartões com e sem fraude. Em contrapartida, atributos relacionados à diversidade e dispersão de uso mostraram associação mais consistente com a ocorrência de fraude, como a utilização de múltiplas linhas e dispositivos distintos, indicando padrões operacionais menos previsíveis.
+A análise comportamental evidenciou que métricas simples de frequência ou intervalo médio entre transações não são suficientes, isoladamente, para diferenciar cartões com e sem fraude.
 
-### Direcionamento para as Etapas Seguintes
+Por outro lado, mostraram-se mais informativas:
+- Métricas de diversidade de uso  
+- Quantidade de linhas distintas utilizadas  
+- Quantidade de dispositivos distintos associados ao cartão  
 
-De forma geral, os resultados exploratórios indicam que a fraude não se manifesta por meio de regras simples ou limiares fixos, mas sim por combinações de padrões comportamentais. Esses achados fundamentaram a etapa de engenharia de features e reforçaram a necessidade de modelos interpretáveis, avaliados com métricas alinhadas ao impacto operacional do problema.
+Esses padrões indicam comportamentos menos previsíveis e maior dispersão operacional, frequentemente associados à ocorrência de fraude.
+
+### Principais Direcionamentos Derivados da Análise
+
+De forma geral, os resultados exploratórios indicam que a fraude **não se manifesta por meio de regras simples ou limiares fixos**, mas sim por combinações de padrões comportamentais.
+
+Esses achados fundamentaram:
+- A construção de features agregadas e comportamentais  
+- A priorização de modelos interpretáveis  
+- A escolha de métricas alinhadas ao impacto operacional  
+
+A análise exploratória cumpriu, assim, o papel de mapear os limites e oportunidades do problema antes da etapa de modelagem.
 
 
 ## 🧠 Engenharia de Features
