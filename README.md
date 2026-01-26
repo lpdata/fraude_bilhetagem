@@ -2,11 +2,11 @@
 
 ## 📌 Contexto e Objetivo
 
-Fraudes em sistemas de bilhetagem eletrônica representam um desafio recorrente para o transporte público, tanto pelo impacto financeiro quanto pelas consequências operacionais associadas a decisões automatizadas incorretas. Um dos principais riscos apontados pela área de negócio é o bloqueio indevido de cartões legítimos, que afeta diretamente a experiência dos usuários.
+Fraudes em sistemas de bilhetagem eletrônica representam um desafio relevante para o transporte público, tanto pelo impacto financeiro quanto pelas consequências operacionais associadas a decisões automatizadas incorretas. Um dos principais riscos destacados pela área de negócio é o bloqueio indevido de cartões legítimos, que afeta diretamente a experiência dos usuários e a confiabilidade do sistema.
 
-Este projeto tem como objetivo explorar dados históricos de bilhetagem e avaliar modelos de Machine Learning capazes de **identificar transações suspeitas**, priorizando interpretabilidade, controle operacional e clareza metodológica.
+Este projeto tem como objetivo explorar dados históricos de bilhetagem eletrônica e desenvolver modelos de Machine Learning capazes de identificar transações suspeitas, priorizando interpretabilidade, clareza metodológica e alinhamento com o contexto operacional.
 
----
+O foco do trabalho não está apenas na performance preditiva, mas na compreensão do problema, na transparência das decisões e na avaliação crítica das limitações impostas pelos dados disponíveis.
 
 ## 📂 Estrutura do Repositório
 
@@ -27,7 +27,6 @@ Este projeto tem como objetivo explorar dados históricos de bilhetagem e avalia
 
 - **outputs/**
   - `matrizes_confusao_modelos.png`
-  - *(demais gráficos gerados durante a análise)*
 
 - **src/**
   - `features.py`
@@ -38,11 +37,9 @@ Este projeto tem como objetivo explorar dados históricos de bilhetagem e avalia
 - `README.md`
 - `requirements.txt`
 
----
-
 ## 📘 Dicionário de Dados
 
-O dataset original contém registros transacionais e cadastrais relacionados ao uso de cartões de transporte. Abaixo estão algumas das colunas mais relevantes, mantendo a descrição original fornecida.
+O conjunto de dados original contém registros transacionais e cadastrais relacionados ao uso de cartões de transporte. Abaixo estão algumas das colunas centrais do problema, mantendo a descrição original fornecida no dicionário de dados.
 
 | Coluna | Descrição | Tipo |
 |------|-----------|------|
@@ -52,24 +49,23 @@ O dataset original contém registros transacionais e cadastrais relacionados ao 
 | valor_transacao | Valor debitado no momento do giro da catraca. | Float |
 | target_fraude | Variável Alvo: 1 para Fraude Confirmada, 0 para Normal. | Binary |
 
-A descrição completa das variáveis está disponível em `data/raw/Dicionário de Dados.pdf`.
-
----
+A descrição completa das variáveis encontra-se em `data/raw/Dicionário de Dados.pdf`.
 
 ## 🔍 Análise Exploratória dos Dados
 
-A análise exploratória teve como foco compreender a estrutura dos dados, o comportamento geral das transações e possíveis sinais associados à fraude. Foram avaliadas distribuições, padrões temporais, características do uso dos cartões e relações entre variáveis.
+A análise exploratória teve como objetivo compreender a estrutura dos dados, o comportamento geral das transações e possíveis sinais associados à fraude. Foram avaliadas distribuições, padrões temporais, características do uso dos cartões e relações entre variáveis.
 
-Essa etapa evidenciou a complexidade do problema e orientou as decisões posteriores de engenharia de features e modelagem.  
-👉 **Os detalhes, gráficos e interpretações estão documentados no notebook `01_exploracao_dados.ipynb`, com comentários explicativos da autora.**
+Essa etapa revelou um problema complexo, no qual transações legítimas e fraudulentas compartilham padrões semelhantes quando observadas isoladamente. Os resultados da exploração orientaram as decisões posteriores de engenharia de features e modelagem.
 
----
+Todo o processo exploratório, incluindo gráficos e interpretações detalhadas, está documentado no notebook `01_exploracao_dados.ipynb`, com comentários explicativos da autora.
 
 ## 🧠 Engenharia de Features
 
-A engenharia de features transformou a base transacional bruta em um dataset analítico, incorporando informações temporais, comportamentais e agregadas por cartão. O objetivo foi contextualizar cada transação dentro do histórico de uso do próprio cartão e do padrão operacional diário.
+A etapa de engenharia de features transformou a base transacional bruta em um dataset analítico mais expressivo, incorporando informações temporais, comportamentais e agregadas por cartão.
 
-O dataset final possui **30.000 registros e 42 colunas**, sendo 38 features derivadas. A documentação completa dessas variáveis está disponível nos arquivos de metadados em `data/processed/`.
+O dataset final possui 30.000 registros e 42 colunas, sendo 38 features derivadas. Essas variáveis foram construídas para contextualizar cada transação dentro do histórico do próprio cartão e do padrão operacional diário.
+
+A relação completa das features criadas, seus tipos e descrições está documentada nos arquivos de metadados disponíveis em `data/processed/`.
 
 ### Exemplos de Features Criadas
 
@@ -81,9 +77,7 @@ O dataset final possui **30.000 registros e 42 colunas**, sendo 38 features deri
 | valor_zscore_cartao | Desvio do valor em relação ao histórico do cartão |
 | uso_acima_media_dia_cartao | Indica uso diário acima do padrão do cartão |
 
-👉 **O processo completo de criação, validação e auditoria dessas features está no notebook `02_tratamento_features.ipynb`, com comentários explicativos da autora.**
-
----
+O processo completo de criação, validação e auditoria dessas variáveis está documentado no notebook `02_tratamento_features.ipynb`, com comentários explicativos da autora.
 
 ## 🤖 Modelagem e Avaliação dos Modelos
 
@@ -102,41 +96,33 @@ Com os dados tratados, foram avaliados diferentes modelos de Machine Learning, c
 | kNN | Simples conceitualmente | Não escala bem | Baixa |
 | Naive Bayes | Rápido | Suposições fortes | Baixa |
 
-Foram avaliados na prática três modelos: **Regressão Logística**, **Árvore de Decisão** e **Random Forest**, utilizando validação cruzada estratificada, métricas adequadas a dados desbalanceados e avaliação em conjunto de teste independente.
+Na prática, três modelos foram desenvolvidos e comparados: Regressão Logística, Árvore de Decisão e Random Forest, utilizando validação cruzada estratificada, métricas adequadas a dados desbalanceados e avaliação em conjunto de teste independente.
 
-👉 **Toda a construção dos pipelines, métricas, gráficos e análises está no notebook `03_modelagem.ipynb`, com comentários explicativos da autora.**
-
----
+Toda a construção dos pipelines, métricas, gráficos e análises está documentada no notebook `03_modelagem.ipynb`, com comentários explicativos da autora.
 
 ## 📊 Comparação Visual dos Modelos
 
-A imagem abaixo apresenta as matrizes de confusão dos três modelos no conjunto de teste, permitindo comparar fraudes detectadas, fraudes perdidas e falsos alertas.
+A figura abaixo apresenta as matrizes de confusão dos três modelos avaliados no conjunto de teste, permitindo comparar fraudes detectadas, fraudes perdidas e volume de alertas gerados por cada abordagem.
 
 ![Matrizes de Confusão dos Modelos](outputs/matrizes_confusao_modelos.png)
 
----
-
 ## 🧠 Conclusões
 
-Os resultados indicaram desempenho limitado para todos os modelos avaliados, com métricas próximas ao comportamento aleatório. A análise visual e quantitativa mostrou forte sobreposição entre transações fraudulentas e legítimas, mesmo após a criação de features comportamentais e agregadas.
+Os resultados indicaram desempenho limitado para todos os modelos avaliados. As análises quantitativas e visuais reforçaram a presença de forte sobreposição entre transações fraudulentas e legítimas, mesmo após a criação de features comportamentais e agregadas.
 
-Nesse cenário, os modelos supervisionados se mostraram mais adequados como **ferramentas de priorização de risco**, apoiando a tomada de decisão, do que como mecanismos automáticos de bloqueio.
-
----
+Nesse contexto, os modelos supervisionados mostraram-se mais adequados como ferramentas de priorização de risco, apoiando decisões operacionais, do que como mecanismos automáticos de bloqueio.
 
 ## 🚀 Recomendações e Próximos Passos
 
-Para evoluir a solução em um ambiente real, algumas direções são promissoras:
+Para evolução da solução em um cenário real, algumas direções são promissoras:
 
-- Enriquecimento dos dados com informações geográficas e sequenciais
+- Enriquecimento dos dados com novas fontes de contexto e localização
 - Modelagem explícita de sequências temporais por cartão
 - Reformulação do problema como ranqueamento de risco
 - Ajuste dinâmico de thresholds conforme perfil e contexto
 - Integração do modelo a fluxos de revisão humana
 - Uso de métodos não supervisionados para detecção de anomalias
 
----
-
 ## ✍️ Autoria
 
-Projeto desenvolvido por **Letícia**, como estudo aplicado em Ciência de Dados e Aprendizado de Máquina, com foco em detecção de fraude, interpretabilidade e análise crítica de limitações em cenários reais.
+Projeto desenvolvido por **Letícia Pacheco**, como estudo aplicado em Ciência de Dados e Aprendizado de Máquina, com foco em detecção de fraude, interpretabilidade e análise crítica de limitações em cenários reais.
