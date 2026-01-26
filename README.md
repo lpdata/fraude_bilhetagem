@@ -2,7 +2,7 @@
 
 ## 📌 Contexto e Objetivo
 
-Sistemas de transporte público enfrentam perdas financeiras relevantes decorrentes de fraudes em transações de bilhetagem eletrônica. Além do impacto financeiro direto, a área de negócio destacou um problema operacional crítico: o cancelamento indevido de cartões legítimos, que afeta usuários regulares e gera insatisfação.
+Sistemas de transporte enfrentam perdas financeiras relevantes decorrentes de fraudes em transações de bilhetagem eletrônica. Além do impacto financeiro direto, a área de negócio destacou um problema operacional crítico: o cancelamento indevido de cartões legítimos, que afeta usuários regulares e gera insatisfação.
 
 Neste contexto, este projeto tem como objetivo desenvolver e avaliar modelos preditivos capazes de identificar transações fraudulentas, utilizando dados históricos de bilhetagem, priorizando interpretabilidade, controle operacional e metodologia robusta, em conformidade com as premissas do case.
 
@@ -10,28 +10,30 @@ Neste contexto, este projeto tem como objetivo desenvolver e avaliar modelos pre
 
 ## 📂 Estrutura do Repositório
 
-fraude_bilhetagem/  
-├── data/  
-│   ├── raw/  
-│   └── processed/  
-│       ├── dados_tratados.csv  
-│       ├── schema_dados_tratados.json  
-│       ├── metadados_colunas.csv  
-│       └── metadados_dataset.json  
-│  
-├── notebooks/  
-│   ├── 01_exploracao_dados.ipynb  
-│   ├── 02_tratamento_features.ipynb  
-│   └── 03_modelagem.ipynb  
-│  
-├── src/  
-│   ├── features.py  
-│   ├── preprocessing.py  
-│   ├── models.py  
-│   └── metrics.py  
-│  
-├── README.md  
-└── requirements.txt  
+## 📂 Estrutura do Repositório
+
+- **data/**
+  - **raw/**
+  - **processed/**
+    - `dados_tratados.csv`
+    - `schema_dados_tratados.json`
+    - `metadados_colunas.csv`
+    - `metadados_dataset.json`
+
+- **notebooks/**
+  - `01_exploracao_dados.ipynb`
+  - `02_tratamento_features.ipynb`
+  - `03_modelagem.ipynb`
+
+- **src/**
+  - `features.py`
+  - `preprocessing.py`
+  - `models.py`
+  - `metrics.py`
+
+- `README.md`
+- `requirements.txt`
+
 
 ---
 
@@ -97,13 +99,17 @@ A projeção nos dois primeiros componentes principais explicou cerca de 30% da 
 
 Foram considerados modelos amplamente utilizados em classificação, avaliando sua aderência ao problema de fraude, interpretabilidade e controle operacional:
 
-| Modelo | Interpretabilidade | Robustez a ruído | Controle de falsos positivos | Adequação ao problema |
-|------|------------------|------------------|-----------------------------|----------------------|
-| Regressão Logística | Alta | Média | Alta (threshold ajustável) | Alta |
-| Árvore de Decisão | Alta | Baixa | Média | Média |
-| Random Forest | Média | Alta | Baixa | Média |
-| Gradient Boosting | Baixa | Alta | Baixa | Não priorizado |
-| Redes Neurais | Baixa | Alta | Baixa | Não priorizado |
+| Modelo | Prós | Contras | Adequação |
+|------|------|--------|----------|
+| Regressão Logística | Alta interpretabilidade<br>Coeficientes explicáveis<br>Baseline robusto | Relações lineares<br>Depende de boas features | **Muito alta**<br>Baseline interpretável |
+| Árvore de Decisão | Regras claras<br>Alta explicabilidade<br>Captura não linearidades | Sensível a ruído<br>Overfitting sem controle | **Alta**<br>Boa para explicação |
+| Random Forest | Boa performance<br>Reduz overfitting<br>Interações complexas | Menor transparência<br>Custo computacional maior | **Alta**<br>Equilíbrio geral |
+| Gradient Boosting | Forte poder preditivo<br>Bom em fraude | Complexidade elevada<br>Difícil explicação | **Média** |
+| XGBoost / LightGBM | Performance de ponta<br>Robusto | Caixa-preta relativa<br>Difícil uso operacional | **Média / Baixa** |
+| SVM | Bom em certos cenários | Pouco interpretável<br>Escala limitada | **Baixa** |
+| kNN | Simples conceitualmente | Não escala bem<br>Difícil interpretação | **Baixa** |
+| Naive Bayes | Rápido<br>Simples | Suposição forte<br>Baixa performance | **Baixa** |
+
 
 ---
 
@@ -151,3 +157,13 @@ Para evoluir a solução em um ambiente real, recomenda-se:
 ## 📌 Considerações Finais
 
 Este projeto entregou um pipeline completo, interpretável e metodologicamente sólido para detecção de fraude em bilhetagem eletrônica, além de diagnosticar com transparência os limites do problema. A principal contribuição reside na compreensão clara do espaço de dados, dos trade-offs envolvidos e dos caminhos mais promissores para evolução da solução em um cenário real.
+
+---
+
+## ✍️ Autoria
+
+Este projeto foi desenvolvido por **Letícia Pacheco**, como estudo aplicado em Ciência de Dados e Aprendizado de Máquina, com foco em detecção de fraude em sistemas de bilhetagem eletrônica.
+
+O trabalho contempla todas as etapas do ciclo de um projeto de Machine Learning, desde a análise exploratória e engenharia de features até a modelagem, avaliação crítica dos resultados e proposição de caminhos de evolução, seguindo boas práticas metodológicas e priorizando interpretabilidade e impacto operacional.
+
+
