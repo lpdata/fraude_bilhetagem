@@ -2,20 +2,9 @@
 
 ## 📌 Contexto e Objetivo
 
-Sistemas de transporte utilizam amplamente a bilhetagem eletrônica como meio de controle de acesso e arrecadação tarifária. Nesse contexto, fraudes em transações representam um problema recorrente, com impactos financeiros e operacionais relevantes para o sistema.
+Fraudes em sistemas de bilhetagem eletrônica representam um desafio recorrente para o transporte público, tanto pelo impacto financeiro quanto pelas consequências operacionais associadas a decisões automatizadas incorretas. Um dos principais riscos apontados pela área de negócio é o bloqueio indevido de cartões legítimos, que afeta diretamente a experiência dos usuários.
 
-Foi disponibilizado um conjunto de dados contendo **30.000 registros históricos de transações de bilhetagem**, com atributos relacionados ao cartão, ao usuário e às circunstâncias da transação. O objetivo central do projeto é **explorar esse conjunto de dados e desenvolver modelos preditivos capazes de identificar ocorrências de fraude**, seguindo boas práticas de Ciência de Dados e Aprendizado de Máquina.
-
-### Desafios do Problema
-
-Ainda que os desafios específicos sejam analisados ao longo do projeto, o problema apresenta, de forma geral, características que tornam a tarefa de detecção de fraude não trivial, tais como:
-
-- Diferença de frequência entre transações legítimas e fraudulentas.
-- Impacto operacional associado a decisões automatizadas incorretas.
-- Necessidade de compreensão e explicação das decisões do modelo.
-- Dependência exclusiva de dados históricos internos ao sistema.
-
-Diante disso, o projeto foi estruturado em etapas bem definidas: análise exploratória, tratamento de dados, engenharia de features e modelagem, com o objetivo de avaliar de forma transparente e criteriosa as possibilidades e limitações dos modelos construídos.
+Este projeto tem como objetivo explorar dados históricos de bilhetagem e avaliar modelos de Machine Learning capazes de **identificar transações suspeitas**, priorizando interpretabilidade, controle operacional e clareza metodológica.
 
 ---
 
@@ -38,6 +27,7 @@ Diante disso, o projeto foi estruturado em etapas bem definidas: análise explor
 
 - **outputs/**
   - `matrizes_confusao_modelos.png`
+  - *(demais gráficos gerados durante a análise)*
 
 - **src/**
   - `features.py`
@@ -48,12 +38,11 @@ Diante disso, o projeto foi estruturado em etapas bem definidas: análise explor
 - `README.md`
 - `requirements.txt`
 
-
 ---
 
-## 📘 Dicionário de Dados (Features Originais)
+## 📘 Dicionário de Dados
 
-O conjunto de dados original é composto por 30.000 registros de transações de bilhetagem eletrônica e diversas variáveis operacionais e cadastrais. Abaixo são apresentadas algumas das colunas mais relevantes, mantendo a **descrição original fornecida no dicionário de dados**.
+O dataset original contém registros transacionais e cadastrais relacionados ao uso de cartões de transporte. Abaixo estão algumas das colunas mais relevantes, mantendo a descrição original fornecida.
 
 | Coluna | Descrição | Tipo |
 |------|-----------|------|
@@ -63,182 +52,91 @@ O conjunto de dados original é composto por 30.000 registros de transações de
 | valor_transacao | Valor debitado no momento do giro da catraca. | Float |
 | target_fraude | Variável Alvo: 1 para Fraude Confirmada, 0 para Normal. | Binary |
 
-O dicionário completo, contendo todas as variáveis originais do dataset, encontra-se no arquivo **Dicionário de Dados.pdf**, disponível na pasta `data/raw/`.
+A descrição completa das variáveis está disponível em `data/raw/Dicionário de Dados.pdf`.
 
 ---
 
 ## 🔍 Análise Exploratória dos Dados
 
-A análise exploratória foi conduzida ao longo das etapas iniciais do projeto, com o objetivo de compreender a estrutura do dataset, a natureza do problema de fraude e os principais padrões associados ao uso dos cartões. Essa etapa orientou tanto a engenharia de features quanto as decisões posteriores de modelagem.
+A análise exploratória teve como foco compreender a estrutura dos dados, o comportamento geral das transações e possíveis sinais associados à fraude. Foram avaliadas distribuições, padrões temporais, características do uso dos cartões e relações entre variáveis.
 
-### Estrutura e Qualidade dos Dados
-
-O conjunto de dados apresenta volume adequado e estrutura consistente para fins de modelagem preditiva. As variáveis temporais, categóricas e numéricas encontram-se bem definidas, permitindo análises sob diferentes perspectivas comportamentais e contextuais. Não foram identificados problemas críticos de integridade que inviabilizassem o uso dos dados, embora algumas variáveis demandassem tratamento e padronização em etapas posteriores.
-
-### Variável Alvo e Desbalanceamento
-
-A variável alvo `target_fraude` apresenta desbalanceamento, com predominância de transações normais em relação às fraudulentas. Esse cenário reforça a necessidade de cuidado na escolha das métricas de avaliação e na interpretação dos resultados, especialmente considerando o impacto operacional de falsos positivos sinalizado pela área de negócio.
-
-### Padrões Temporais e Contextuais
-
-As análises temporais, como hora do dia, dia da semana e tempo de vida do cartão, indicaram variações discretas na taxa de fraude, sem padrões determinísticos claros quando observadas de forma isolada. Variáveis de contexto operacional, como integração tarifária e limites de uso, também apresentaram baixo poder discriminante individual, sugerindo atuação apenas como sinais auxiliares quando combinadas a outros atributos.
-
-### Perfil do Usuário e Características da Transação
-
-Variáveis demográficas e cadastrais não demonstraram diferenças relevantes entre transações normais e fraudulentas. Da mesma forma, o valor da transação, analisado isoladamente, apresentou forte sobreposição entre os grupos, indicando que não constitui um indicador direto de fraude neste contexto. Por outro lado, o tipo de cartão apresentou diferenças mais expressivas na taxa de fraude, sugerindo influência do perfil do benefício no risco associado.
-
-### Comportamento de Uso dos Cartões
-
-A análise comportamental evidenciou que métricas simples de frequência ou intervalo entre transações não são suficientes, isoladamente, para diferenciar cartões com e sem fraude. Em contrapartida, atributos relacionados à diversidade e dispersão de uso mostraram associação mais consistente com a ocorrência de fraude, como a utilização de múltiplas linhas e dispositivos distintos, indicando padrões operacionais menos previsíveis.
-
-### Direcionamento para as Etapas Seguintes
-
-De forma geral, os resultados exploratórios indicam que a fraude não se manifesta por meio de regras simples ou limiares fixos, mas sim por combinações de padrões comportamentais. Esses achados fundamentaram a etapa de engenharia de features e reforçaram a necessidade de modelos interpretáveis, avaliados com métricas alinhadas ao impacto operacional do problema.
+Essa etapa evidenciou a complexidade do problema e orientou as decisões posteriores de engenharia de features e modelagem.  
+👉 **Os detalhes, gráficos e interpretações estão documentados no notebook `01_exploracao_dados.ipynb`, com comentários explicativos da autora.**
 
 ---
 
 ## 🧠 Engenharia de Features
 
-A etapa de tratamento e engenharia de features teve como objetivo transformar a base transacional bruta em um dataset analiticamente consistente, rastreável e pronto para modelagem. Ao longo das Etapas 1 a 8, o conjunto de dados evoluiu de uma estrutura essencialmente descritiva para uma base rica em informações temporais, comportamentais e agregadas, mantendo rigor técnico e clareza conceitual.
+A engenharia de features transformou a base transacional bruta em um dataset analítico, incorporando informações temporais, comportamentais e agregadas por cartão. O objetivo foi contextualizar cada transação dentro do histórico de uso do próprio cartão e do padrão operacional diário.
 
-O dataset final é composto por **30.000 registros e 42 colunas**, organizadas da seguinte forma:
-
-- **Colunas de rastreio**, garantindo auditabilidade e depuração do pipeline  
-- **Variável alvo**, claramente isolada e protegida contra vazamentos  
-- **38 features derivadas**, construídas de forma incremental, documentada e validada  
-
-A relação completa das features criadas, bem como seus tipos e descrições, encontra-se documentada nos arquivos de metadados disponíveis em `data/processed/`.
-
-### Principais Direcionamentos da Engenharia de Features
-
-#### Enriquecimento temporal e sequencial
-
-Foram criadas features temporais e de sequência com o objetivo de capturar padrões dinâmicos de uso dos cartões, indo além da análise pontual de transações isoladas. Métricas relacionadas a tempo desde a última transação, frequência em janelas móveis e uso em intervalos curtos permitem identificar comportamentos atípicos que dificilmente seriam detectados apenas com atributos brutos.
-
-#### Comportamento diário e consistência operacional
-
-A modelagem do comportamento diário incorporou informações sobre diversidade e repetição de uso, como quantidade de linhas e dispositivos distintos por dia e repetição de padrões operacionais. Essas variáveis introduzem o conceito de estabilidade versus ruptura de padrão, um sinal clássico em problemas de fraude.
-
-#### Consolidação do histórico do cartão
-
-Agregações por cartão forneceram uma visão de longo prazo do comportamento do usuário, incluindo volume de uso, dias ativos, médias e estatísticas de valor transacionado. Esse histórico funciona como uma referência individual, permitindo que cada transação seja avaliada dentro do contexto do próprio cartão.
-
-#### Comparações relativas ao comportamento individual
-
-Foram construídas features que comparam cada transação com o histórico do cartão, como razão em relação à média, z-score individual e identificação de outliers. Essa abordagem permite capturar desvios sutis de comportamento, muitas vezes mais informativos do que valores absolutos elevados.
+O dataset final possui **30.000 registros e 42 colunas**, sendo 38 features derivadas. A documentação completa dessas variáveis está disponível nos arquivos de metadados em `data/processed/`.
 
 ### Exemplos de Features Criadas
 
-A tabela abaixo apresenta algumas das principais features derivadas durante o processo:
-
 | Feature | Descrição |
 |------|-----------|
-| tempo_desde_ultima_transacao_min | Intervalo de tempo, em minutos, desde a última transação do cartão |
-| qtd_linhas_distintas_dia | Quantidade de linhas de ônibus distintas utilizadas pelo cartão no dia |
-| cartao_media_transacoes_por_dia | Média histórica de transações diárias do cartão |
-| valor_zscore_cartao | Z-score do valor da transação em relação ao histórico do cartão |
-| uso_acima_media_dia_cartao | Flag indicando uso diário acima da média histórica do cartão |
+| tempo_desde_ultima_transacao_min | Intervalo desde a última transação do cartão |
+| qtd_linhas_distintas_dia | Linhas de ônibus distintas utilizadas no dia |
+| cartao_media_transacoes_por_dia | Média histórica de transações diárias |
+| valor_zscore_cartao | Desvio do valor em relação ao histórico do cartão |
+| uso_acima_media_dia_cartao | Indica uso diário acima do padrão do cartão |
 
-### Avaliação de Prontidão para Modelagem
-
-Ao final da Etapa 8, o dataset encontra-se:
-
-- Sem vazamentos de informação em relação à variável alvo  
-- Com tipagem adequada e categóricas preparadas para encoding  
-- Com auditoria explícita de valores ausentes, restritos a casos semanticamente esperados  
-- Totalmente versionado, documentado e exportado para reutilização  
-
-Esse nível de maturidade permitiu que a etapa seguinte do projeto fosse dedicada exclusivamente à construção, comparação e avaliação de modelos de machine learning, sem necessidade de retrabalho nas fases anteriores.
+👉 **O processo completo de criação, validação e auditoria dessas features está no notebook `02_tratamento_features.ipynb`, com comentários explicativos da autora.**
 
 ---
 
 ## 🤖 Modelagem e Avaliação dos Modelos
 
-Com o dataset tratado e enriquecido por meio da engenharia de features, iniciou-se a etapa de modelagem supervisionada com o objetivo de avaliar diferentes algoritmos de Machine Learning aplicados à detecção de fraudes em transações de bilhetagem eletrônica.
+Com os dados tratados, foram avaliados diferentes modelos de Machine Learning, considerando desempenho, interpretabilidade e impacto operacional.
 
-Essa etapa foi conduzida seguindo boas práticas metodológicas, incluindo validação cruzada estratificada, uso de métricas adequadas a dados desbalanceados e avaliação final em conjunto de teste independente. Além do desempenho preditivo, foram considerados critérios de interpretabilidade, estabilidade e impacto operacional, conforme as premissas do problema de negócio.
-
-### Seleção e Justificativa dos Modelos Avaliados
+### Modelos Considerados
 
 | Modelo | Prós | Contras | Adequação |
 |------|------|--------|----------|
-| Regressão Logística | Alta interpretabilidade<br>Coeficientes explicáveis<br>Baseline robusto | Relações lineares<br>Depende de boas features | Muito alta<br>Baseline interpretável |
-| Árvore de Decisão | Regras claras<br>Alta explicabilidade<br>Captura não linearidades | Sensível a ruído<br>Overfitting sem controle | Alta<br>Boa para explicação |
-| Random Forest | Boa performance<br>Reduz overfitting<br>Interações complexas | Menor transparência<br>Custo computacional maior | Alta<br>Equilíbrio geral |
-| Gradient Boosting | Forte poder preditivo<br>Bom em fraude | Complexidade elevada<br>Difícil explicação | Média |
-| XGBoost / LightGBM | Performance de ponta<br>Robusto | Caixa-preta relativa<br>Difícil uso operacional | Média / Baixa |
-| SVM | Bom em certos cenários | Pouco interpretável<br>Escala limitada | Baixa |
-| kNN | Simples conceitualmente | Não escala bem<br>Difícil interpretação | Baixa |
-| Naive Bayes | Rápido<br>Simples | Suposição forte<br>Baixa performance | Baixa |
+| Regressão Logística | Alta interpretabilidade<br>Coeficientes explicáveis | Relações lineares<br>Depende de boas features | Muito alta |
+| Árvore de Decisão | Regras claras<br>Captura não linearidades | Sensível a ruído | Alta |
+| Random Forest | Reduz overfitting<br>Interações complexas | Menor transparência | Alta |
+| Gradient Boosting | Forte poder preditivo | Complexidade elevada | Média |
+| XGBoost / LightGBM | Alta performance | Uso operacional difícil | Média / Baixa |
+| SVM | Bom em cenários específicos | Pouco interpretável | Baixa |
+| kNN | Simples conceitualmente | Não escala bem | Baixa |
+| Naive Bayes | Rápido | Suposições fortes | Baixa |
 
-A partir da análise comparativa, foram selecionados três modelos para avaliação prática no projeto: **Regressão Logística**, **Árvore de Decisão** e **Random Forest**.
+Foram avaliados na prática três modelos: **Regressão Logística**, **Árvore de Decisão** e **Random Forest**, utilizando validação cruzada estratificada, métricas adequadas a dados desbalanceados e avaliação em conjunto de teste independente.
 
-A Regressão Logística foi adotada como baseline interpretável, permitindo leitura direta dos coeficientes e maior transparência na tomada de decisão. A Árvore de Decisão foi incluída por sua capacidade de capturar não linearidades de forma explicável, enquanto o Random Forest foi utilizado como um ensemble capaz de reduzir variância e explorar interações mais complexas entre as features.
+👉 **Toda a construção dos pipelines, métricas, gráficos e análises está no notebook `03_modelagem.ipynb`, com comentários explicativos da autora.**
 
-Modelos de maior complexidade, como Gradient Boosting e XGBoost, foram deliberadamente mantidos fora do escopo principal devido à menor interpretabilidade e à dificuldade de uso operacional, considerando as restrições do problema e os requisitos do case.
+---
 
-### Comparação Visual dos Modelos
+## 📊 Comparação Visual dos Modelos
 
-A figura abaixo apresenta as matrizes de confusão dos três modelos avaliados no conjunto de teste (holdout), considerando threshold padrão de 0.5. A visualização permite comparar diretamente o volume de falsos alertas, fraudes detectadas e fraudes perdidas em cada abordagem.
+A imagem abaixo apresenta as matrizes de confusão dos três modelos no conjunto de teste, permitindo comparar fraudes detectadas, fraudes perdidas e falsos alertas.
 
 ![Matrizes de Confusão dos Modelos](outputs/matrizes_confusao_modelos.png)
-
-Os resultados obtidos indicaram desempenho limitado para todos os modelos avaliados, com métricas próximas ao comportamento aleatório. A análise de diagnóstico exploratório da separabilidade já havia evidenciado forte sobreposição entre transações fraudulentas e legítimas no espaço de features, o que se confirmou durante a modelagem.
-
-A Regressão Logística apresentou o melhor desempenho relativo em termos de PR-AUC, estabilidade e interpretabilidade, sendo definida como o modelo vencedor do projeto. Ainda assim, os resultados reforçam que o principal limitador do desempenho não está na escolha do algoritmo, mas na natureza dos dados disponíveis.
-
-Nesse contexto, os modelos supervisionados atuam de forma mais adequada como ferramentas de **priorização de risco**, e não como soluções definitivas de detecção automática de fraude.
-
----
-
----
-
-## 📊 Resultados Visuais Relevantes
-
-Durante o projeto, algumas visualizações desempenharam papel central na compreensão do problema e na interpretação dos resultados obtidos. Em especial:
-
-- A projeção por PCA permitiu avaliar visualmente a separabilidade entre transações fraudulentas e legítimas.
-- As matrizes de confusão possibilitaram a comparação direta do comportamento dos modelos no conjunto de teste.
-- A análise do trade-off operacional evidenciou o impacto prático das decisões do modelo em termos de alertas e fraudes capturadas.
-
-Essas visualizações complementam a análise quantitativa e estão documentadas no notebook de modelagem, servindo como apoio à interpretação dos resultados.
 
 ---
 
 ## 🧠 Conclusões
 
-A avaliação dos modelos confirmou que a limitação central do problema não está associada à escolha do algoritmo, mas sim às características do espaço de dados disponível. Mesmo após a construção de features temporais, comportamentais e agregadas, observou-se baixa separabilidade entre as classes.
+Os resultados indicaram desempenho limitado para todos os modelos avaliados, com métricas próximas ao comportamento aleatório. A análise visual e quantitativa mostrou forte sobreposição entre transações fraudulentas e legítimas, mesmo após a criação de features comportamentais e agregadas.
 
-Nesse contexto, os modelos supervisionados avaliados apresentam maior adequação como mecanismos de **priorização de risco**, auxiliando a tomada de decisão, do que como soluções automáticas de detecção definitiva de fraude.
+Nesse cenário, os modelos supervisionados se mostraram mais adequados como **ferramentas de priorização de risco**, apoiando a tomada de decisão, do que como mecanismos automáticos de bloqueio.
 
 ---
 
 ## 🚀 Recomendações e Próximos Passos
 
-Considerando um cenário real de aplicação, alguns caminhos podem ser explorados para evolução da solução:
+Para evoluir a solução em um ambiente real, algumas direções são promissoras:
 
-- Enriquecimento do dataset com informações adicionais de contexto e localização.
-- Modelagem explícita de sequências temporais por cartão, capturando padrões de longo prazo.
-- Reformulação do problema como ranqueamento de risco em vez de classificação binária rígida.
-- Ajuste dinâmico de thresholds conforme perfil do cartão ou contexto operacional.
-- Integração do modelo a fluxos de revisão humana.
-- Exploração de abordagens não supervisionadas ou semi-supervisionadas para detecção de anomalias.
-
----
-
-## 📌 Considerações Finais
-
-O projeto resultou em um pipeline completo, interpretável e metodologicamente consistente para análise de fraude em bilhetagem eletrônica. Mais do que buscar maximizar métricas, o trabalho concentrou-se em compreender o problema, explicitar limitações e propor caminhos realistas de evolução.
-
-A principal contribuição está na clareza do diagnóstico, na avaliação crítica dos trade-offs envolvidos e na construção de uma base sólida para decisões futuras em um ambiente operacional real.
-
+- Enriquecimento dos dados com informações geográficas e sequenciais
+- Modelagem explícita de sequências temporais por cartão
+- Reformulação do problema como ranqueamento de risco
+- Ajuste dinâmico de thresholds conforme perfil e contexto
+- Integração do modelo a fluxos de revisão humana
+- Uso de métodos não supervisionados para detecção de anomalias
 
 ---
 
 ## ✍️ Autoria
 
-Este projeto foi desenvolvido por **Letícia Pacheco**, como estudo aplicado em Ciência de Dados e Aprendizado de Máquina, com foco em detecção de fraude em sistemas de bilhetagem eletrônica.
-
-O trabalho contempla todas as etapas do ciclo de um projeto de Machine Learning, desde a análise exploratória e engenharia de features até a modelagem, avaliação crítica dos resultados e proposição de caminhos de evolução, seguindo boas práticas metodológicas e priorizando interpretabilidade e impacto operacional.
-
-
+Projeto desenvolvido por **Letícia**, como estudo aplicado em Ciência de Dados e Aprendizado de Máquina, com foco em detecção de fraude, interpretabilidade e análise crítica de limitações em cenários reais.
