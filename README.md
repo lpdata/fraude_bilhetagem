@@ -1,5 +1,6 @@
 # 🚍 Detecção de Fraudes em Sistemas de Bilhetagem Eletrônica
 
+
 ## 📌 Contexto e Objetivo
 
 Sistemas de transporte utilizam amplamente a bilhetagem eletrônica como meio de controle de acesso e arrecadação tarifária. Nesse contexto, fraudes em transações representam um problema recorrente, com impactos financeiros e operacionais relevantes para o sistema.
@@ -16,6 +17,7 @@ Ainda que os desafios específicos sejam analisados ao longo do projeto, o probl
 - Dependência exclusiva de dados históricos internos ao sistema.
 
 Diante disso, o projeto foi estruturado em etapas bem definidas: análise exploratória, tratamento de dados, engenharia de features e modelagem, com o objetivo de avaliar de forma transparente e criteriosa as possibilidades e limitações dos modelos construídos.
+
 
 ## 📂 Estrutura do Repositório
 
@@ -45,6 +47,7 @@ Diante disso, o projeto foi estruturado em etapas bem definidas: análise explor
 
 - `README.md`
 - `requirements.txt`
+
 
 ## 📘 Dicionário de Dados (Features Originais)
 
@@ -88,37 +91,78 @@ A análise comportamental evidenciou que métricas simples de frequência ou int
 
 De forma geral, os resultados exploratórios indicam que a fraude não se manifesta por meio de regras simples ou limiares fixos, mas sim por combinações de padrões comportamentais. Esses achados fundamentaram a etapa de engenharia de features e reforçaram a necessidade de modelos interpretáveis, avaliados com métricas alinhadas ao impacto operacional do problema.
 
----
 
 ## 🧠 Engenharia de Features
 
-A etapa de tratamento e engenharia de features teve como objetivo transformar a base transacional bruta em um dataset analiticamente consistente, rastreável e pronto para modelagem. Ao longo das Etapas 1 a 8, o conjunto de dados evoluiu de uma estrutura essencialmente descritiva para uma base rica em informações temporais, comportamentais e agregadas, mantendo rigor técnico e clareza conceitual.
+A etapa de engenharia de features teve como objetivo transformar a base transacional bruta em um dataset analiticamente consistente, rastreável e adequado à modelagem preditiva. O foco não foi apenas aumentar o número de variáveis, mas **representar padrões comportamentais e temporais relevantes ao problema de fraude**, mantendo clareza e controle sobre cada transformação aplicada.
 
-O dataset final é composto por **30.000 registros e 42 colunas**, organizadas da seguinte forma:
+### Visão Geral do Dataset Final
 
-- **Colunas de rastreio**, garantindo auditabilidade e depuração do pipeline  
-- **Variável alvo**, claramente isolada e protegida contra vazamentos  
-- **38 features derivadas**, construídas de forma incremental, documentada e validada  
+| Elemento | Descrição |
+|-------|----------|
+| Registros | 30.000 transações |
+| Total de colunas | 42 |
+| Colunas de rastreio | Garantem auditabilidade e depuração |
+| Variável alvo | Isolada e protegida contra vazamentos |
+| Features derivadas | 38 variáveis construídas de forma incremental |
 
-A relação completa das features criadas, bem como seus tipos e descrições, encontra-se documentada nos arquivos de metadados disponíveis em `data/processed/`.
+A relação completa das features criadas, com tipos e descrições detalhadas, está documentada nos arquivos de metadados disponíveis em `data/processed/`.
 
-### Principais Direcionamentos da Engenharia de Features
+### Eixos Principais da Engenharia de Features
 
-#### Enriquecimento temporal e sequencial
+Em vez de depender de atributos isolados, a engenharia de features foi organizada em **quatro eixos conceituais**, descritos a seguir.
 
-Foram criadas features temporais e de sequência com o objetivo de capturar padrões dinâmicos de uso dos cartões, indo além da análise pontual de transações isoladas. Métricas relacionadas a tempo desde a última transação, frequência em janelas móveis e uso em intervalos curtos permitem identificar comportamentos atípicos que dificilmente seriam detectados apenas com atributos brutos.
+#### ⏱️ Enriquecimento temporal e sequencial
 
-#### Comportamento diário e consistência operacional
+Foram criadas variáveis voltadas à dinâmica de uso do cartão ao longo do tempo, permitindo capturar padrões que não emergem em análises pontuais.
 
-A modelagem do comportamento diário incorporou informações sobre diversidade e repetição de uso, como quantidade de linhas e dispositivos distintos por dia e repetição de padrões operacionais. Essas variáveis introduzem o conceito de estabilidade versus ruptura de padrão, um sinal clássico em problemas de fraude.
+Principais ideias exploradas:
+- Intervalo desde a última transação
+- Frequência de uso em janelas móveis
+- Identificação de uso em intervalos curtos
+- Flags de uso intenso em períodos reduzidos
 
-#### Consolidação do histórico do cartão
+Essas features permitem identificar comportamentos acelerados ou fora do padrão esperado.
 
-Agregações por cartão forneceram uma visão de longo prazo do comportamento do usuário, incluindo volume de uso, dias ativos, médias e estatísticas de valor transacionado. Esse histórico funciona como uma referência individual, permitindo que cada transação seja avaliada dentro do contexto do próprio cartão.
+#### 🧭 Comportamento diário e consistência operacional
 
-#### Comparações relativas ao comportamento individual
+Esse eixo buscou representar **estabilidade versus ruptura de padrão** no uso cotidiano do cartão.
 
-Foram construídas features que comparam cada transação com o histórico do cartão, como razão em relação à média, z-score individual e identificação de outliers. Essa abordagem permite capturar desvios sutis de comportamento, muitas vezes mais informativos do que valores absolutos elevados.
+Foram consideradas, por exemplo:
+- Quantidade de linhas distintas utilizadas no dia
+- Quantidade de dispositivos distintos por dia
+- Repetição de linha ou dispositivo em transações consecutivas
+
+Esses sinais ajudam a diferenciar comportamentos recorrentes legítimos de sequências operacionais atípicas.
+
+#### 🧾 Consolidação do histórico do cartão
+
+Agregações por cartão permitiram construir uma visão de longo prazo do comportamento individual, funcionando como uma referência histórica para cada usuário.
+
+Entre as informações consolidadas estão:
+- Volume total de transações
+- Dias ativos do cartão
+- Média de transações por dia
+- Diversidade de linhas, dispositivos e motoristas
+- Estatísticas de valor transacionado
+
+Esse histórico fornece contexto para interpretar cada nova transação.
+
+#### 📊 Comparações relativas ao comportamento individual
+
+Além de valores absolutos, foram criadas variáveis que **comparam cada transação com o próprio histórico do cartão**, permitindo capturar desvios sutis.
+
+Exemplos de abordagens adotadas:
+- Razão entre valor da transação e média do cartão
+- Z-score individual do valor transacionado
+- Identificação de outliers comportamentais
+- Uso acima da média diária do cartão
+
+Esse tipo de feature tende a ser especialmente informativo em cenários reais de fraude, onde desvios graduais podem ser mais relevantes do que picos isolados.
+
+### Resultado da Etapa
+
+Ao final do processo, o dataset encontra-se organizado, documentado e pronto para suportar a comparação entre diferentes modelos de machine learning, permitindo análises consistentes de desempenho, interpretabilidade e impacto operacional.
 
 ### Exemplos de Features Criadas
 
@@ -142,6 +186,7 @@ Ao final da Etapa, o dataset encontra-se:
 - Totalmente versionado, documentado e exportado para reutilização  
 
 Essa estruturação permitiu que a etapa seguinte do projeto fosse dedicada exclusivamente à construção, comparação e avaliação de modelos de machine learning, sem necessidade de retrabalho nas fases anteriores.
+
 
 ## 🤖 Modelagem e Avaliação dos Modelos
 
@@ -168,6 +213,7 @@ A Regressão Logística foi adotada como baseline interpretável, permitindo lei
 
 Modelos de maior complexidade, como Gradient Boosting e XGBoost, foram deliberadamente mantidos fora do escopo principal devido à menor interpretabilidade e à dificuldade de uso operacional, considerando as restrições do problema e os requisitos do case.
 
+
 ### Comparação Visual dos Modelos
 
 A figura abaixo apresenta as matrizes de confusão dos três modelos avaliados no conjunto de teste (holdout), considerando threshold padrão de 0.5. A visualização permite comparar diretamente o volume de falsos alertas, fraudes detectadas e fraudes perdidas em cada abordagem.
@@ -180,6 +226,7 @@ A Regressão Logística apresentou o melhor desempenho relativo em termos de PR-
 
 Nesse contexto, os modelos supervisionados atuam de forma mais adequada como ferramentas de **priorização de risco**, e não como soluções definitivas de detecção automática de fraude.
 
+
 ## 📊 Resultados Visuais Relevantes
 
 Durante o projeto, algumas visualizações desempenharam papel central na compreensão do problema e na interpretação dos resultados obtidos. Em especial:
@@ -190,11 +237,13 @@ Durante o projeto, algumas visualizações desempenharam papel central na compre
 
 Essas visualizações complementam a análise quantitativa e estão documentadas no notebook de modelagem, servindo como apoio à interpretação dos resultados.
 
+
 ## 🧠 Conclusões
 
 A avaliação dos modelos confirmou que a limitação central do problema não está associada à escolha do algoritmo, mas sim às características do espaço de dados disponível. Mesmo após a construção de features temporais, comportamentais e agregadas, observou-se baixa separabilidade entre as classes.
 
 Nesse contexto, os modelos supervisionados avaliados apresentam maior adequação como mecanismos de **priorização de risco**, auxiliando a tomada de decisão, do que como soluções automáticas de detecção definitiva de fraude.
+
 
 ## 🚀 Recomendações e Próximos Passos
 
@@ -207,11 +256,13 @@ Considerando um cenário real de aplicação, alguns caminhos podem ser explorad
 - Integração do modelo a fluxos de revisão humana.
 - Exploração de abordagens não supervisionadas ou semi-supervisionadas para detecção de anomalias.
 
+
 ## 📌 Considerações Finais
 
 O projeto resultou em um pipeline completo, interpretável e metodologicamente consistente para análise de fraude em bilhetagem eletrônica. Mais do que buscar maximizar métricas, o trabalho concentrou-se em compreender o problema, explicitar limitações e propor caminhos realistas de evolução.
 
 A principal contribuição está na clareza do diagnóstico, na avaliação crítica dos trade-offs envolvidos e na construção de uma base sólida para decisões futuras em um ambiente operacional real.
+
 
 ## ✍️ Autoria
 
