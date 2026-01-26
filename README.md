@@ -10,8 +10,6 @@ Neste contexto, este projeto tem como objetivo desenvolver e avaliar modelos pre
 
 ## 📂 Estrutura do Repositório
 
-## 📂 Estrutura do Repositório
-
 - **data/**
   - **raw/**
   - **processed/**
