@@ -1,1 +1,7 @@
+# Ignorar todos os dados brutos e processados
+data/raw/
+data/processed/
 
+# Caso queira manter os metadados/dicionários públicos, ignore apenas os CSVs:
+# data/raw/*.csv
+# data/processed/*.csv
